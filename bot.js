@@ -122,24 +122,8 @@ function truncate(str, max) {
 
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
-bot.on('document', async (ctx) => {
-  const doc = ctx.message.document;
-  const name = (doc.file_name || '').toLowerCase();
-
-  if (!name.endsWith('.txt') && !name.endsWith('.docx')) {
-    return ctx.reply('Faqat .txt yoki .docx fayl yuboring.');
-  }
-
-  await ctx.reply('Fayl o\'qilyapti...');
-
-  let rawText;
-  try {
-    rawText = await extractText(ctx, doc);
-  } catch (e) {
-    console.error(e);
-    return ctx.reply('Faylni o\'qib bo\'lmadi: ' + e.message);
-  }
-
+// ---------- Savollarni poll qilib yuborish (fayl va matn uchun umumiy) ----------
+async function sendQuestionsAsPolls(ctx, rawText) {
   const questions = parseQuestions(rawText);
 
   if (questions.length === 0) {
@@ -180,10 +164,49 @@ bot.on('document', async (ctx) => {
   }
 
   await ctx.reply(`Tayyor. Yuborildi: ${sent} ta${skipped ? `, o'tkazib yuborildi: ${skipped} ta` : ''}.`);
+}
+
+// ---------- Fayl kelganda ----------
+bot.on('document', async (ctx) => {
+  const doc = ctx.message.document;
+  const name = (doc.file_name || '').toLowerCase();
+
+  if (!name.endsWith('.txt') && !name.endsWith('.docx')) {
+    return ctx.reply('Faqat .txt yoki .docx fayl yuboring, yoki savollarni to\'g\'ridan-to\'g\'ri matn qilib yuboring.');
+  }
+
+  await ctx.reply('Fayl o\'qilyapti...');
+
+  let rawText;
+  try {
+    rawText = await extractText(ctx, doc);
+  } catch (e) {
+    console.error(e);
+    return ctx.reply('Faylni o\'qib bo\'lmadi: ' + e.message);
+  }
+
+  await sendQuestionsAsPolls(ctx, rawText);
+});
+
+// ---------- Oddiy matn xabar kelganda ----------
+bot.on('text', async (ctx) => {
+  const text = ctx.message.text;
+
+  if (text.startsWith('/')) return; // /start kabi komandalarni bu yerda ishlatmaymiz
+
+  if (!text.includes('⁉️')) {
+    return ctx.reply(
+      'Savol formatida yubor:\n\n' +
+      '⁉️1. Savol matni\n🔷️A) variant\n🔷️B) variant\n🔷️C) variant\n🔷️D) variant\n✅️C\n\n' +
+      'Yoki shu formatdagi .txt/.docx fayl yuboring.'
+    );
+  }
+
+  await sendQuestionsAsPolls(ctx, text);
 });
 
 bot.start((ctx) => ctx.reply(
-  'Salom! Menga .txt yoki .docx fayl yuboring — ichidagi savollarni quiz poll qilib qaytaraman.\n\n' +
+  'Salom! Menga savollarni ⁉️/🔷️/✅️ formatida matn qilib yozing yoki .txt/.docx fayl yuboring — quiz poll qilib qaytaraman.\n\n' +
   'Format:\n⁉️1. Savol matni\n🔷️A) variant\n🔷️B) variant\n🔷️C) variant\n🔷️D) variant\n✅️C'
 ));
 
