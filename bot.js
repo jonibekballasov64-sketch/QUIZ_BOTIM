@@ -152,7 +152,7 @@ async function sendQuestionsAsPolls(ctx, rawText) {
       await ctx.telegram.sendPoll(ctx.chat.id, questionText, opts, {
         type: 'quiz',
         correct_option_id: q.correctIndex,
-        is_anonymous: false
+        is_anonymous: true
       });
       sent++;
     } catch (e) {
@@ -192,7 +192,7 @@ bot.on('document', async (ctx) => {
 bot.on('text', async (ctx) => {
   const text = ctx.message.text;
 
-  if (text.startsWith('/')) return; // /start kabi komandalarni bu yerda ishlatmaymiz
+  if (text.startsWith('/')) return;
 
   if (!text.includes('⁉️')) {
     return ctx.reply(
