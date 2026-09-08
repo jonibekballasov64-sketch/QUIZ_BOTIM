@@ -1,0 +1,15 @@
+{
+  "name": "attestatsiya-quiz-poll-bot",
+  "version": "1.0.0",
+  "description": "Fayldan savollarni o'qib, Telegram native quiz poll qilib yuboruvchi bot",
+  "main": "bot.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "dependencies": {
+    "telegraf": "^4.16.3",
+    "mammoth": "^1.8.0",
+    "dotenv": "^16.4.5"
+  }
+}
