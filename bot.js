@@ -166,6 +166,12 @@ async function sendQuestionsAsPolls(ctx, rawText) {
   await ctx.reply(`Tayyor. Yuborildi: ${sent} ta${skipped ? `, o'tkazib yuborildi: ${skipped} ta` : ''}.`);
 }
 
+// ---------- Komandalar avval ro'yxatdan o'tadi ----------
+bot.start((ctx) => ctx.reply(
+  'Salom! Menga savollarni ⁉️/🔷️/✅️ formatida matn qilib yozing yoki .txt/.docx fayl yuboring — quiz poll qilib qaytaraman.\n\n' +
+  'Format:\n⁉️1. Savol matni\n🔷️A) variant\n🔷️B) variant\n🔷️C) variant\n🔷️D) variant\n✅️C'
+));
+
 // ---------- Fayl kelganda ----------
 bot.on('document', async (ctx) => {
   const doc = ctx.message.document;
@@ -204,11 +210,6 @@ bot.on('text', async (ctx) => {
 
   await sendQuestionsAsPolls(ctx, text);
 });
-
-bot.start((ctx) => ctx.reply(
-  'Salom! Menga savollarni ⁉️/🔷️/✅️ formatida matn qilib yozing yoki .txt/.docx fayl yuboring — quiz poll qilib qaytaraman.\n\n' +
-  'Format:\n⁉️1. Savol matni\n🔷️A) variant\n🔷️B) variant\n🔷️C) variant\n🔷️D) variant\n✅️C'
-));
 
 bot.launch();
 console.log('Bot ishga tushdi.');
